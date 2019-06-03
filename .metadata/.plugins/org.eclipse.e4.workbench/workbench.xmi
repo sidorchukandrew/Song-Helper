@@ -3,7 +3,7 @@
   <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;workbench>&#xD;&#xA;&lt;mruList>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;org.eclipse.jdt.ui.CompilationUnitEditor&quot; name=&quot;DriveQuickstart.java&quot; tooltip=&quot;Worship Song Generator/src/main/java/DriveQuickstart.java&quot;>&#xD;&#xA;&lt;persistable path=&quot;/Worship Song Generator/src/main/java/DriveQuickstart.java&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;/mruList>&#xD;&#xA;&lt;/workbench>"/>
   <tags>activeSchemeId:org.eclipse.ui.defaultAcceleratorConfiguration</tags>
   <tags>ModelMigrationProcessor.001</tags>
-  <children xsi:type="basic:TrimmedWindow" xmi:id="_Vhlnsn2XEemNrNfhNTVKug" elementId="IDEWindow" contributorURI="platform:/plugin/org.eclipse.platform" selectedElement="_XY0PEX2XEemNrNfhNTVKug" label="%trimmedwindow.label.eclipseSDK" x="32" y="32" width="1024" height="768">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_Vhlnsn2XEemNrNfhNTVKug" elementId="IDEWindow" contributorURI="platform:/plugin/org.eclipse.platform" selectedElement="_XY0PEX2XEemNrNfhNTVKug" label="%trimmedwindow.label.eclipseSDK" x="0" y="0" width="1024" height="768">
     <persistedState key="coolBarVisible" value="true"/>
     <persistedState key="perspectiveBarVisible" value="true"/>
     <persistedState key="isRestored" value="true"/>
@@ -121,9 +121,10 @@
           </children>
         </children>
       </children>
-      <children xsi:type="basic:PartStack" xmi:id="_XY02IX2XEemNrNfhNTVKug" elementId="stickyFolderRight" toBeRendered="false" containerData="2500">
+      <children xsi:type="basic:PartStack" xmi:id="_XY02IX2XEemNrNfhNTVKug" elementId="stickyFolderRight" visible="false" containerData="2500" selectedElement="_XY02I32XEemNrNfhNTVKug">
+        <tags>Minimized</tags>
         <children xsi:type="advanced:Placeholder" xmi:id="_XY02In2XEemNrNfhNTVKug" elementId="org.eclipse.help.ui.HelpView" toBeRendered="false" ref="_XYxy0H2XEemNrNfhNTVKug"/>
-        <children xsi:type="advanced:Placeholder" xmi:id="_XY02I32XEemNrNfhNTVKug" elementId="org.eclipse.ui.internal.introview" toBeRendered="false" ref="_XYzoAH2XEemNrNfhNTVKug"/>
+        <children xsi:type="advanced:Placeholder" xmi:id="_XY02I32XEemNrNfhNTVKug" elementId="org.eclipse.ui.internal.introview" ref="_XYzoAH2XEemNrNfhNTVKug"/>
         <children xsi:type="advanced:Placeholder" xmi:id="_XY02JH2XEemNrNfhNTVKug" elementId="org.eclipse.ui.cheatsheets.views.CheatSheetView" toBeRendered="false" ref="_XY0PEH2XEemNrNfhNTVKug"/>
       </children>
     </children>
@@ -136,13 +137,14 @@
     <sharedElements xsi:type="basic:Part" xmi:id="_XYzoAH2XEemNrNfhNTVKug" elementId="org.eclipse.ui.internal.introview" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Welcome" iconURI="platform:/plugin/org.eclipse.ui/icons/full/eview16/defaultview_misc.png" tooltip="" closeable="true">
       <persistedState key="originalCompatibilityViewClass" value="org.eclipse.ui.internal.ViewIntroAdapterPart"/>
       <persistedState key="originalCompatibilityViewBundle" value="org.eclipse.ui"/>
+      <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;view>&#xD;&#xA;&lt;presentation currentPage=&quot;qroot&quot; restore=&quot;true&quot;/>&#xD;&#xA;&lt;standbyPart/>&#xD;&#xA;&lt;/view>"/>
       <tags>View</tags>
       <tags>categoryTag:General</tags>
       <menus xmi:id="_ZWYH8H2XEemNrNfhNTVKug" elementId="org.eclipse.ui.internal.introview">
         <tags>ViewMenu</tags>
         <tags>menuContribution:menu</tags>
       </menus>
-      <toolbar xmi:id="_ZWYH8X2XEemNrNfhNTVKug" elementId="org.eclipse.ui.internal.introview" visible="false"/>
+      <toolbar xmi:id="_ZWYH8X2XEemNrNfhNTVKug" elementId="org.eclipse.ui.internal.introview"/>
     </sharedElements>
     <sharedElements xsi:type="basic:Part" xmi:id="_XY0PEH2XEemNrNfhNTVKug" elementId="org.eclipse.ui.cheatsheets.views.CheatSheetView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Cheat Sheets" iconURI="platform:/plugin/org.eclipse.ui.cheatsheets/icons/view16/cheatsheet_view.gif" tooltip="" closeable="true">
       <persistedState key="originalCompatibilityViewClass" value="org.eclipse.ui.internal.cheatsheets.views.CheatSheetView"/>
@@ -155,7 +157,7 @@
         <tags>org.eclipse.e4.primaryDataStack</tags>
         <tags>EditorStack</tags>
         <children xsi:type="basic:Part" xmi:id="_oQA1sH2XEemNrNfhNTVKug" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="DriveQuickstart.java" iconURI="platform:/plugin/org.eclipse.jdt.ui/icons/full/obj16/jcu_obj.png" closeable="true">
-          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;editor id=&quot;org.eclipse.jdt.ui.CompilationUnitEditor&quot; name=&quot;DriveQuickstart.java&quot; partName=&quot;DriveQuickstart.java&quot; title=&quot;DriveQuickstart.java&quot; tooltip=&quot;Worship Song Generator/src/main/java/DriveQuickstart.java&quot;>&#xD;&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/Worship Song Generator/src/main/java/DriveQuickstart.java&quot;/>&#xD;&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;2218&quot; selectionTopPixel=&quot;0&quot;/>&#xD;&#xA;&lt;/editor>"/>
+          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;editor id=&quot;org.eclipse.jdt.ui.CompilationUnitEditor&quot; name=&quot;DriveQuickstart.java&quot; partName=&quot;DriveQuickstart.java&quot; title=&quot;DriveQuickstart.java&quot; tooltip=&quot;Worship Song Generator/src/main/java/DriveQuickstart.java&quot;>&#xD;&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/Worship Song Generator/src/main/java/DriveQuickstart.java&quot;/>&#xD;&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;2218&quot; selectionTopPixel=&quot;265&quot;/>&#xD;&#xA;&lt;/editor>"/>
           <tags>Editor</tags>
           <tags>org.eclipse.jdt.ui.CompilationUnitEditor</tags>
           <tags>removeOnHide</tags>
@@ -309,7 +311,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_X2JrUH2XEemNrNfhNTVKug" elementId="org.eclipse.ui.workbench.file">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_3ceUcYJbEemMQuCc3iUotQ" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_VpZf7H2XEemNrNfhNTVKug"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_d5PghIR5Eem6gJDboTQa7Q" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_VpZf7H2XEemNrNfhNTVKug"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_X2KSYH2XEemNrNfhNTVKug" elementId="additions" toBeRendered="false">
         <tags>toolbarSeparator</tags>
@@ -333,7 +335,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_X2KSZH2XEemNrNfhNTVKug" elementId="org.eclipse.ui.workbench.navigate">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_3ceUe4JbEemMQuCc3iUotQ" elementId="org.eclipse.ui.window.pinEditor" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" type="Check" command="_VpYRyX2XEemNrNfhNTVKug"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_d5YDY4R5Eem6gJDboTQa7Q" elementId="org.eclipse.ui.window.pinEditor" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" type="Check" command="_VpYRyX2XEemNrNfhNTVKug"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_X2KSZX2XEemNrNfhNTVKug" elementId="group.editor" toBeRendered="false">
         <tags>toolbarSeparator</tags>
@@ -373,7 +375,12 @@
         <tags>Draggable</tags>
       </children>
     </trimBars>
-    <trimBars xmi:id="_YdRVsH2XEemNrNfhNTVKug" elementId="org.eclipse.ui.trim.vertical2" side="Right"/>
+    <trimBars xmi:id="_YdRVsH2XEemNrNfhNTVKug" elementId="org.eclipse.ui.trim.vertical2" side="Right">
+      <children xsi:type="menu:ToolControl" xmi:id="_UH9MoIR5Eem4q73eQ6jn5w" elementId="stickyFolderRight(minimized)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
+        <tags>TrimStack</tags>
+        <tags>Draggable</tags>
+      </children>
+    </trimBars>
   </children>
   <handlers xmi:id="_ldAk0OIIEeWDJvu3hU0AuQ" elementId="org.eclipse.recommenders.news.rcp.handler.pollNewsFeeds" contributorURI="platform:/plugin/org.eclipse.recommenders.news.rcp" contributionURI="bundleclass://org.eclipse.recommenders.news.rcp/org.eclipse.recommenders.internal.news.rcp.poll.PollNewsFeedsHandler" command="_b1nMwOIIEeWDJvu3hU0AuQ"/>
   <handlers xmi:id="_3wSe0ORAEeWsxfI1gGpqQw" elementId="org.eclipse.recommenders.news.rcp.handler.readNewsItems" contributorURI="platform:/plugin/org.eclipse.recommenders.news.rcp" contributionURI="bundleclass://org.eclipse.recommenders.news.rcp/org.eclipse.recommenders.internal.news.rcp.read.ReadNewsItemsHandler" command="_cDk8oOQ_EeWsxfI1gGpqQw"/>
@@ -2388,7 +2395,7 @@
   <addons xmi:id="_Vhlnw32XEemNrNfhNTVKug" elementId="MinMax Addon" contributorURI="platform:/plugin/org.eclipse.platform" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.MinMaxAddon"/>
   <addons xmi:id="_VhlnxH2XEemNrNfhNTVKug" elementId="org.eclipse.ui.workbench.addon.0" contributorURI="platform:/plugin/org.eclipse.platform" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
   <addons xmi:id="_VjivgH2XEemNrNfhNTVKug" elementId="SplitterAddon" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.splitteraddon.SplitterAddon"/>
-  <addons xmi:id="_zz8HgYJbEemMQuCc3iUotQ" elementId="org.eclipse.ui.ide.addon.0" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
+  <addons xmi:id="_bpGp4YR5Eem6gJDboTQa7Q" elementId="org.eclipse.ui.ide.addon.0" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
   <addons xmi:id="_dz0JgGOlEeSMMaPQU2nlzw" elementId="org.eclipse.ui.ide.application.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.ide.application" contributionURI="bundleclass://org.eclipse.ui.ide.application/org.eclipse.ui.internal.ide.application.addons.ModelCleanupAddon"/>
   <categories xmi:id="_VpN5sH2XEemNrNfhNTVKug" elementId="org.eclipse.team.ui.category.team" name="Team" description="Actions that apply when working with a Team"/>
   <categories xmi:id="_VpN5sX2XEemNrNfhNTVKug" elementId="org.eclipse.ui.category.views" name="Views" description="Commands for opening views"/>

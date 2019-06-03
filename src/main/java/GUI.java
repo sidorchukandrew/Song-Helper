@@ -3,7 +3,10 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollBar;
@@ -47,7 +51,7 @@ import javax.swing.text.StyledDocument;
 
 public class GUI extends JFrame
 {
-	private final int DEFAULT_WIDTH = 1000;
+	private final int DEFAULT_WIDTH = 1300;
 	private final int DEFAULT_HEIGHT = DEFAULT_WIDTH / 12 * 9;
 	
 	private final String DEFAULT_PATH = "C:\\Users\\Andrew Sidorchuk\\Desktop\\Worship Team";
@@ -72,13 +76,22 @@ public class GUI extends JFrame
 	private JButton convertButton;
 	
 	private Color pinkText = new Color(245, 215, 224);
-	private Color darkBlueBackground = new Color(38, 41, 84);
 	
 	private Color panelBlue = new Color(93, 87, 107);
 	private Color darkBlue = new Color(0, 22, 40);
 	private Color lightBlue = new Color(166, 171, 255);
 	private Color pink = new Color(247, 86, 124);
 	private JProgressBar progressBar;
+	
+	private int status;
+	private File [] directoryFiles2;
+	
+	private ProgressCircleWithInnerTracker circularProgressBar, progressCircleForLyricsConversion;
+	private ProgressCircle progressCircleForPDFConversion, progressCircleForGoogleUpload, progressCircleForGooglePDFUpload;
+	
+	private int totalLinesInSong = 0, currentLineNumber = 0;
+	String songPath;
+	String update = "";
 	
 	Task task;
 	
@@ -88,30 +101,42 @@ public class GUI extends JFrame
 		@Override
 		protected Void doInBackground() throws Exception 
 		{
-			File [] directoryFiles = directoryToReadFrom.listFiles();
-			String update = "";
-			String songPath;
-			
+			directoryFiles2 = directoryToReadFrom.listFiles();
 			setProgress(0);
 			
-			for(int i = 0; i < directoryFiles.length; i++)
+			for(int i = 0; i < directoryFiles2.length; i++)
 			{
+				status = i;
+				update = directoryFiles2[i].getName() + "\n";
 				
-				update = directoryFiles[i].getName() + "\n";
 				updateProgressField(" Converting to .docx ->\t", 0);
 				updateProgressField(update, 1);
 
-				songPath = Main.convertTextToWord(pathToSaveLyrics, directoryFiles[i]);
+				songPath = Main.convertTextToWord(pathToSaveLyrics, directoryFiles2[i], progressCircleForLyricsConversion);
+					
+				new Thread(new Runnable() {
+
+					@Override
+					public void run()
+					{
+						progressCircleForLyricsConversion.updateOverAllProgress((int)((double)((status + 1) / (double)directoryFiles2.length) * 100));
+						progressCircleForLyricsConversion.repaint();
+					}
+					
+				}).start();
 				
 				if(uploadLyricsToGoogleEnabled)
 				{
+
 					updateProgressField(" Uploading to Google ->\t", 2);
 					Main.uploadToGoogle(songPath);
+					progressCircleForGoogleUpload.updateOverAllProgress((int)((double)((status + 1) / (double)directoryFiles2.length) * 100));
+					progressCircleForGoogleUpload.repaint();
 					updateProgressField(update, 1);
 				}
-					
-				setProgress((int)((double)((i + 1) / (double)directoryFiles.length) * 100));
-				updateStats(i + 1, directoryFiles.length);
+				
+				setProgress((int)((double)((i + 1) / (double)directoryFiles2.length) * 100));
+				updateStats(i + 1, directoryFiles2.length);
 			}
 			
 			return null;
@@ -142,15 +167,18 @@ public class GUI extends JFrame
 		setJMenuBar(setUpMenuBar());
 		
 		JPanel saveOnLocalComputerPanel = new JPanel();
-		saveOnLocalComputerPanel.setLayout(new GridLayout(2, 1, 3, 10));
+		saveOnLocalComputerPanel.setLayout(new GridLayout(2, 2, 3, 10));
 		saveOnLocalComputerPanel.setBackground(darkBlue);
 		
 		saveOnLocalComputerPanel.add(setup_saveLyricsToFolderPanel());
+		saveOnLocalComputerPanel.add(setup_uploadPrintableLyricsToGoogle());
 		saveOnLocalComputerPanel.add(setup_savePDFsToFolderPanel());
+		saveOnLocalComputerPanel.add(setup_uploadPDFToGoogle());
 		
 		add(saveOnLocalComputerPanel, BorderLayout.CENTER);
-		add(east(), BorderLayout.EAST);
+//		add(east(), BorderLayout.EAST);
 		add(setup_progressBar(), BorderLayout.SOUTH);
+
 		setVisible(true);
 		
 	}
@@ -360,111 +388,121 @@ public class GUI extends JFrame
 	public JPanel setup_savePDFsToFolderPanel()
 	{
 		JPanel panel = new JPanel();
-		JPanel northPanel = new JPanel();
-		panel.setLayout(new GridLayout(2, 1));
-		northPanel.setLayout(new GridLayout(3, 1));
+		panel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
 		
-		fieldForPath_PDFs = new JTextField(DEFAULT_PATH_TO_SAVE_PDFS);
-		fieldForPath_PDFs.setForeground(Color.WHITE);
-		fieldForPath_PDFs.setBackground(panelBlue);
-		fieldForPath_PDFs.setFont(new Font("Calibri", Font.ITALIC, 14));
+		progressCircleForPDFConversion = new ProgressCircle();
+		progressCircleForPDFConversion.setEmptyColor(ProgressCircle.EMPTY_RED);
+		progressCircleForPDFConversion.setFullColor(ProgressCircle.FULL_RED);
+		c.gridx = 0;
+		c.gridy = 0;
+		c.ipadx = 220;
+		c.ipady = 220;
+		panel.add(progressCircleForPDFConversion, c);
 		
-		fieldForListing_PDFs = new JTextArea();
+//		c.gridx = 1;
+//		c.gridy = 0;
+//		fieldForPath_PDFs = new JTextField(DEFAULT_PATH_TO_SAVE_PDFS);
+//		fieldForPath_PDFs.setForeground(Color.WHITE);
+//		fieldForPath_PDFs.setBackground(panelBlue);
+//		fieldForPath_PDFs.setFont(new Font("Calibri", Font.ITALIC, 14));
+//		panel.add(fieldForPath_PDFs, c);
 		
-		TitledBorder border = BorderFactory.createTitledBorder("Folder preview");
-		border.setTitleFont(new Font("Calibri", Font.PLAIN, 10));
-		border.setTitlePosition(TitledBorder.BOTTOM);
-		border.setTitleColor(Color.WHITE);
+//		fieldForListing_PDFs = new JTextArea();
+//		
+//		TitledBorder border = BorderFactory.createTitledBorder("Folder preview");
+//		border.setTitleFont(new Font("Calibri", Font.PLAIN, 10));
+//		border.setTitlePosition(TitledBorder.BOTTOM);
+//		border.setTitleColor(Color.WHITE);
+//		
+//		fieldForListing_PDFs.setBorder(border);
+//		fieldForListing_PDFs.setOpaque(false);
+//		fieldForListing_PDFs.setForeground(Color.WHITE);
 		
-		fieldForListing_PDFs.setBorder(border);
-		fieldForListing_PDFs.setOpaque(false);
-		fieldForListing_PDFs.setForeground(Color.WHITE);
+//		fieldForPath_PDFs.addActionListener(new ActionListener() {
+//			
+//			@Override
+//			public void actionPerformed(ActionEvent e) 
+//			{
+//				System.out.println("Enter pressed");
+//				
+//				fieldForListing_PDFs.setText("");
+//				if(new File(fieldForPath_PDFs.getText()).isDirectory())
+//				{
+//					fieldForPath_PDFs.setFont(new Font("Calibri", Font.PLAIN, 14));
+//				
+//					File directory = new File(fieldForPath_PDFs.getText());
+//					
+////					File [] allFilesInDirectory = directory.listFiles();
+////
+////					fieldForListing_PDFs.setForeground(Color.WHITE);
+////					for(File f : allFilesInDirectory)
+////						fieldForListing_PDFs.append(f.getName() + "\n");
+//				}
+//				
+//				else
+//				{
+//					JOptionPane.showConfirmDialog(getContentPane(), "Not a valid directory.");
+//				}
+//				
+//			}
+//		});
 		
-		fieldForPath_PDFs.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) 
-			{
-				System.out.println("Enter pressed");
-				
-				fieldForListing_PDFs.setText("");
-				if(new File(fieldForPath_PDFs.getText()).isDirectory())
-				{
-					fieldForPath_PDFs.setFont(new Font("Calibri", Font.PLAIN, 14));
-				
-					File directory = new File(fieldForPath_PDFs.getText());
-					
-					File [] allFilesInDirectory = directory.listFiles();
-
-					fieldForListing_PDFs.setForeground(Color.WHITE);
-					for(File f : allFilesInDirectory)
-						fieldForListing_PDFs.append(f.getName() + "\n");
-				}
-				
-				else
-				{
-					fieldForListing_PDFs.setText("Not a valid directory!");
-					fieldForListing_PDFs.setForeground(Color.RED);
-				}
-				
-			}
-		});
-		
-		JTextField OR = new JTextField("OR");
-		OR.setForeground(lightBlue);
-		OR.setEditable(false);
-		OR.setOpaque(false);
-		OR.setBorder(null);
-		
-		JButton button = new JButton("Search");
-		button.setBackground(darkBlue);
-		button.setForeground(darkBlue);
-		button.setBorder(BorderFactory.createLineBorder(lightBlue));
-		button.setMaximumSize(new Dimension(40,40));
-		button.setPreferredSize(new Dimension(40, 40));
-		
-		button.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				JFileChooser fileExplorer = new JFileChooser(pathToSavePDFs);
-				fileExplorer.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				fileExplorer.setApproveButtonText("Choose");
-			
-				int returnValue = fileExplorer.showOpenDialog(GUI.this);
-				
-				fieldForListing_PDFs.setText("");
-				
-				if(returnValue == 0)
-				{
-					directoryToSaveLyricsTo = fileExplorer.getSelectedFile();
-					
-					fieldForPath_PDFs.setText(directoryToSaveLyricsTo.getPath());
-					fieldForPath_PDFs.setFont(new Font("Calibri", Font.PLAIN, 14));
-					
-					File [] allFilesInDirectory = directoryToSaveLyricsTo.listFiles();
-
-					fieldForListing_SavedLyrics.setForeground(Color.WHITE);
-					for(File f : allFilesInDirectory)
-						fieldForListing_PDFs.append(f.getName() + "\n");
-				}
-				
-			}
-		});
-		
-		northPanel.add(button);
-		northPanel.add(OR);
-		northPanel.add(fieldForPath_PDFs);
-		northPanel.setBackground(darkBlue);
-		northPanel.setOpaque(true);
-		
-		panel.add(northPanel);
-		panel.add(fieldForListing_PDFs);
-		
-		TitledBorder tb = new TitledBorder("PDFs destination on local computer");
-		tb.setTitleColor(lightBlue);
-		panel.setBorder(tb);
+//		JTextField OR = new JTextField("OR");
+//		OR.setForeground(lightBlue);
+//		OR.setEditable(false);
+//		OR.setOpaque(false);
+//		OR.setBorder(null);
+//		
+//		JButton button = new JButton("Search");
+//		button.setBackground(darkBlue);
+//		button.setForeground(darkBlue);
+//		button.setBorder(BorderFactory.createLineBorder(lightBlue));
+//		button.setMaximumSize(new Dimension(40,40));
+//		button.setPreferredSize(new Dimension(40, 40));
+//		
+//		button.addActionListener(new ActionListener() {
+//			
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				
+//				JFileChooser fileExplorer = new JFileChooser(pathToSavePDFs);
+//				fileExplorer.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+//				fileExplorer.setApproveButtonText("Choose");
+//			
+//				int returnValue = fileExplorer.showOpenDialog(GUI.this);
+//				
+//				fieldForListing_PDFs.setText("");
+//				
+//				if(returnValue == 0)
+//				{
+//					directoryToSaveLyricsTo = fileExplorer.getSelectedFile();
+//					
+//					fieldForPath_PDFs.setText(directoryToSaveLyricsTo.getPath());
+//					fieldForPath_PDFs.setFont(new Font("Calibri", Font.PLAIN, 14));
+//					
+//					File [] allFilesInDirectory = directoryToSaveLyricsTo.listFiles();
+//
+//					fieldForListing_SavedLyrics.setForeground(Color.WHITE);
+//					for(File f : allFilesInDirectory)
+//						fieldForListing_PDFs.append(f.getName() + "\n");
+//				}
+//				
+//			}
+//		});
+//		
+//		northPanel.add(button);
+//		northPanel.add(OR);
+//		northPanel.add(fieldForPath_PDFs);
+//		northPanel.setBackground(darkBlue);
+//		northPanel.setOpaque(true);
+//		
+//		panel.add(northPanel);
+//		panel.add(fieldForListing_PDFs);
+//		
+//		TitledBorder tb = new TitledBorder("PDFs destination on local computer");
+//		tb.setTitleColor(lightBlue);
+//		panel.setBorder(tb);
 		panel.setBackground(darkBlue);
 		panel.setOpaque(true);
 		
@@ -472,37 +510,65 @@ public class GUI extends JFrame
 	}
 	
 	public JPanel setup_saveLyricsToFolderPanel()
-	{
-		JPanel northPanel = new JPanel();
+	{		
 		JPanel panel = new JPanel();
-		panel.setLayout(new GridLayout(2,1));
-		northPanel.setLayout(new GridLayout(3, 1));
-		northPanel.setBackground(darkBlue);
+		JLabel type = new JLabel("Conversion to Word");
 		
+		type.setFont(new Font("Calibri", Font.PLAIN, 24));
+		type.setForeground(Color.WHITE);
+		
+		panel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.gridwidth = 3;
+		panel.add(type, c);
+		
+		progressCircleForLyricsConversion = new ProgressCircleWithInnerTracker();
+		progressCircleForLyricsConversion.setEmptyColor(ProgressCircleWithInnerTracker.EMPTY_BLUE);
+		progressCircleForLyricsConversion.setFullColor(ProgressCircleWithInnerTracker.FULL_BLUE);
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 1;
+		c.gridheight = 2;
+		c.ipadx = 240;
+		c.ipady = 240;
+		panel.add(progressCircleForLyricsConversion, c);
+		
+		//Field to type in folder destination
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = 1;
+		c.ipadx = 300;
+		c.ipady = 10;
+		c.anchor = GridBagConstraints.PAGE_END;
 		fieldForPath_Lyrics = new JTextField(DEFAULT_PATH_TO_SAVE_LYRICS);
 		fieldForPath_Lyrics.setFont(new Font("Calibri", Font.ITALIC, 14));
-		
 		fieldForPath_Lyrics.setForeground(Color.WHITE);
 		fieldForPath_Lyrics.setBackground(panelBlue);
+		panel.add(fieldForPath_Lyrics, c);
 		
-		fieldForListing_SavedLyrics = new JTextArea();
-		
-		TitledBorder border = BorderFactory.createTitledBorder("Folder preview");
-		border.setTitleFont(new Font("Calibri", Font.PLAIN, 10));
-		border.setTitlePosition(TitledBorder.BOTTOM);
-		border.setTitleColor(Color.WHITE);
-		
-		fieldForListing_SavedLyrics.setBorder(border);
-		fieldForListing_SavedLyrics.setOpaque(false);
-		fieldForListing_SavedLyrics.setForeground(Color.WHITE);
-		
+//		fieldForListing_SavedLyrics = new JTextArea();
+//		
+//		TitledBorder border = BorderFactory.createTitledBorder("Folder preview");
+//		border.setTitleFont(new Font("Calibri", Font.PLAIN, 10));
+//		border.setTitlePosition(TitledBorder.BOTTOM);
+//		border.setTitleColor(Color.WHITE);
+//		
+//		fieldForListing_SavedLyrics.setBorder(border);
+//		fieldForListing_SavedLyrics.setOpaque(false);
+//		fieldForListing_SavedLyrics.setForeground(Color.WHITE);
+//		
 		fieldForPath_Lyrics.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Enter pressed");
 				
-				fieldForListing_SavedLyrics.setText("");
+				//fieldForListing_SavedLyrics.setText("");
 				if(new File(fieldForPath_Lyrics.getText()).isDirectory())
 				{
 					fieldForPath_Lyrics.setFont(new Font("Calibri", Font.PLAIN, 14));
@@ -513,36 +579,43 @@ public class GUI extends JFrame
 					
 					File [] allFilesInDirectory = directory.listFiles();
 
-					fieldForListing_SavedLyrics.setForeground(Color.WHITE);
-					
-					for(File f : allFilesInDirectory)
-						fieldForListing_SavedLyrics.append(f.getName() + "\n");
+//					fieldForListing_SavedLyrics.setForeground(Color.WHITE);
+//					
+//					for(File f : allFilesInDirectory)
+//						fieldForListing_SavedLyrics.append(f.getName() + "\n");
 				}
 				
 				else
 				{
-					fieldForListing_SavedLyrics.setText("Not a valid directory!");
-					fieldForListing_SavedLyrics.setForeground(Color.RED);
+//					fieldForListing_SavedLyrics.setText("Not a valid directory!");
+//					fieldForListing_SavedLyrics.setForeground(Color.RED);
+					System.out.println("Not valid");
+					JOptionPane.showConfirmDialog(getContentPane(), "Not a valid directory.");
 				}
 			}
 		});
-		
-		JTextField OR = new JTextField("OR");
-		OR.setForeground(lightBlue);
-		OR.setEditable(false);
-		OR.setOpaque(false);
-		OR.setBorder(null);
-		
+//		
+//		JTextField OR = new JTextField("OR");
+//		OR.setForeground(lightBlue);
+//		OR.setEditable(false);
+//		OR.setOpaque(false);
+//		OR.setBorder(null);
+//		
 		JButton button = new JButton("Search");
-		button.setForeground(darkBlue);
-		button.setBackground(darkBlue);
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = 2;
+		c.ipadx = 50;
+		c.ipady = 20;
+		c.insets = new Insets(10, 0, 0, 0);
+		c.anchor = GridBagConstraints.PAGE_START;
 		button.setBorder(BorderFactory.createLineBorder(lightBlue));
-		button.setMaximumSize(new Dimension(20, 20));
 		
 		button.addActionListener(new ActionListener() {
 			
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e)
+			{
 				
 				JFileChooser fileExplorer = new JFileChooser(pathToSaveLyrics);
 				fileExplorer.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -550,7 +623,7 @@ public class GUI extends JFrame
 			
 				int returnValue = fileExplorer.showOpenDialog(GUI.this);
 				
-				fieldForListing_SavedLyrics.setText("");
+				//fieldForListing_SavedLyrics.setText("");
 				
 				if(returnValue == 0)
 				{
@@ -560,45 +633,23 @@ public class GUI extends JFrame
 					fieldForPath_Lyrics.setText(directoryToSaveLyricsTo.getPath());
 					fieldForPath_Lyrics.setFont(new Font("Calibri", Font.PLAIN, 14));
 					
-					File [] allFilesInDirectory = directoryToSaveLyricsTo.listFiles();
-
-					fieldForListing_SavedLyrics.setForeground(Color.WHITE);
-					for(File f : allFilesInDirectory)
-						fieldForListing_SavedLyrics.append(f.getName() + "\n");
+//					File [] allFilesInDirectory = directoryToSaveLyricsTo.listFiles();
+//
+//					fieldForListing_SavedLyrics.setForeground(Color.WHITE);
+//					for(File f : allFilesInDirectory)
+//						fieldForListing_SavedLyrics.append(f.getName() + "\n");
+				}
+				
+				else
+				{
+					System.out.println("Zero not returned");
 				}
 				
 			}
 		});
 		
-		northPanel.add(button);
-		northPanel.add(OR);
-		northPanel.add(fieldForPath_Lyrics);
-		northPanel.setOpaque(false);
+		panel.add(button, c);
 		
-		panel.add(northPanel);
-		panel.add(fieldForListing_SavedLyrics);
-		
-		TitledBorder tb = new TitledBorder("Lyrics destination");
-		tb.setTitleColor(lightBlue);
-		panel.setBorder(tb);
-		panel.setBackground(darkBlue);
-		panel.setOpaque(false);
-		
-		return panel;
-	}
-	
-	
-	private void setAllDefaults()
-	{
-//		pathToSaveLyrics = DEFAULT_PATH_TO_SAVE_LYRICS;
-//		directoryToReadFrom = new File();
-	}
-	
-	public JPanel east()
-	{
-		JPanel panel = new JPanel();
-		panel.setBackground(darkBlue);
-
 		class converter extends JPanel implements ActionListener, PropertyChangeListener
 		{
 
@@ -627,9 +678,100 @@ public class GUI extends JFrame
 		if(directoryToReadFrom == null)
 			convertButton.setEnabled(false);
 		
-		panel.add(convertButton);
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = 2;
+		panel.add(convertButton, c);
+		
+		panel.setBackground(darkBlue);
+		panel.setOpaque(false);
+		
 		return panel;
 	}
+	
+	public JPanel setup_uploadPrintableLyricsToGoogle()
+	{
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		
+		progressCircleForGoogleUpload = new ProgressCircle();
+		progressCircleForGoogleUpload.setEmptyColor(ProgressCircle.EMPTY_PURPLE);
+		progressCircleForGoogleUpload.setFullColor(Color.WHITE);
+		c.gridx = 0;
+		c.gridy = 0;
+		c.ipadx = 220;
+		c.ipady = 220;
+		panel.add(progressCircleForGoogleUpload, c);
+		
+//		c.gridx = 1;
+//		c.gridy = 0;
+//		fieldForPath_Lyrics = new JTextField(DEFAULT_PATH_TO_SAVE_LYRICS);
+//		fieldForPath_Lyrics.setFont(new Font("Calibri", Font.ITALIC, 14));
+//		fieldForPath_Lyrics.setForeground(Color.WHITE);
+//		fieldForPath_Lyrics.setBackground(panelBlue);
+//		panel.add(fieldForPath_Lyrics, c);
+		
+		panel.setBackground(darkBlue);
+		panel.setOpaque(false);
+		
+		return panel;
+		
+	}
+	
+	public JPanel setup_uploadPDFToGoogle()
+	{
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		
+		progressCircleForGooglePDFUpload = new ProgressCircle();
+		progressCircleForGooglePDFUpload.setEmptyColor(ProgressCircle.EMPTY_YELLOW);
+		progressCircleForGooglePDFUpload.setFullColor(ProgressCircle.FULL_YELLOW);
+		c.gridx = 0;
+		c.gridy = 0;
+		c.ipadx = 220;
+		c.ipady = 220;
+		panel.add(progressCircleForGooglePDFUpload, c);
+		
+//		c.gridx = 1;
+//		c.gridy = 0;
+//		fieldForPath_Lyrics = new JTextField(DEFAULT_PATH_TO_SAVE_LYRICS);
+//		fieldForPath_Lyrics.setFont(new Font("Calibri", Font.ITALIC, 14));
+//		fieldForPath_Lyrics.setForeground(Color.WHITE);
+//		fieldForPath_Lyrics.setBackground(panelBlue);
+//		panel.add(fieldForPath_Lyrics, c);
+		
+		panel.setBackground(darkBlue);
+		panel.setOpaque(false);
+		
+		return panel;
+		
+	}
+	
+	
+	private void setAllDefaults()
+	{
+//		pathToSaveLyrics = DEFAULT_PATH_TO_SAVE_LYRICS;
+//		directoryToReadFrom = new File();
+	}
+	
+	public JPanel east()
+	{
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(1, 2));
+		panel.setBackground(darkBlue);
+		
+		circularProgressBar = new ProgressCircleWithInnerTracker();
+		circularProgressBar.setEmptyColor(ProgressCircleWithInnerTracker.EMPTY_BLUE);
+		circularProgressBar.setFullColor(ProgressCircleWithInnerTracker.FULL_BLUE);
+		
+		panel.add(circularProgressBar);
+		panel.add(convertButton);
+		
+		return panel;
+	}
+	
 	
 	public JPanel setup_progressBar()
 	{
@@ -747,5 +889,15 @@ public class GUI extends JFrame
 	            e.printStackTrace();
 	        } 
 		}
+	}
+	
+	public void setTotalLinesInSong(int total)
+	{
+		totalLinesInSong = total;
+	}
+	
+	public void setCurrentLineNumber(int current)
+	{
+		currentLineNumber = current;
 	}
 }

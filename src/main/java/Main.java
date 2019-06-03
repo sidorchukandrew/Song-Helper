@@ -56,6 +56,8 @@ public class Main
 	private static final String PRINTABLE_LYRICS_FOLDER_ID 			   = "1r9YLq-udT62g_W_zej14DNfP8EQ-E0wq";
 	
 	//static final String PATH_TO_SAVE_PDF = "C:\\Users\\Andrew Sidorchuk\\Desktop\\Worship Team\\Z Binder\\PDFs";
+	private static long totalLines;
+	private static int currentLine;
 	
 	public static void main(String [] args)
 	{
@@ -130,7 +132,7 @@ public class Main
 		}
 	}
 	
-	public static String convertTextToWord(String destinationToSavePrintableLyrics, File textFileToConvert)
+	public static String convertTextToWord(String destinationToSavePrintableLyrics, File textFileToConvert, ProgressCircleWithInnerTracker progressCircle)
 	{
 		String currentSongName = textFileToConvert.getName();
 		String fullSongPath = null;
@@ -140,25 +142,33 @@ public class Main
 			//Buffer contains the OnSong version of the worship songs (Chords and Lyrics)
 			BufferedReader buffer = new BufferedReader(new FileReader(textFileToConvert));
 			
+			Path path = Paths.get(textFileToConvert.getPath());
+			totalLines = java.nio.file.Files.lines(path).count();
+			
+			currentLine = 1;
+			
+			System.out.println("This song has this many lines : " + totalLines);
+			
 			String lineIn = "";
 			
 			//Create the new Word document to write into
 			document = new WordDocumentLyrics();
 			
-			int lineNumber = 1;
-			
 			while((lineIn = buffer.readLine()) != null)
 			{
+
+				progressCircle.updateProgressOfIndividualConversion((int)((currentLine  / (double)totalLines) * 100));
+				progressCircle.repaint();
+
 				//If this is a separating line, write it to the file (else)
 				if(!lineIn.isEmpty())
 				{
 					lineIn = formatStringFromText(lineIn, document);
-					//System.out.println(lineIn);
 					
 					//If the result is an empty line, do nothing. 
 					if(!lineIn.isEmpty())
 					{
-						if(lineNumber == 1)
+						if(currentLine == 1)
 						{
 							lineIn = lineIn.toUpperCase();
 							document.generateTitle(lineIn);
@@ -171,7 +181,7 @@ public class Main
 				else
 					document.generateBreak();
 				
-				lineNumber++;
+				currentLine++;
 			}
 
 			System.out.println(destinationToSavePrintableLyrics + "\\" + songNumber + ". " + currentSongName.replaceAll("[.][^.]+$", "") + ".docx");
@@ -245,5 +255,14 @@ public class Main
 		System.out.println(songNumber);
 		document.generateHeader(songNumber);
 	}
+	
+	public long getTotalLines()
+	{
+		return totalLines;
+	}
 
+	public int getCurrentLineNumber()
+	{
+		return currentLine;
+	}
 }
