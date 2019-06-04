@@ -1,36 +1,19 @@
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
 
 import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.apache.poi.util.SystemOutLogger;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-
-import com.google.api.services.drive.Drive.Files;
-
-
-import fr.opensagres.poi.xwpf.converter.pdf.PdfConverter;
-import fr.opensagres.poi.xwpf.converter.pdf.PdfOptions;
-
-import static java.nio.file.StandardCopyOption.*;
-
-import java.awt.Color;
-
-import static java.nio.file.Files.*;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.FileList;
 
 //import org.apache.poi.xwpf.converter.pdf.PdfConverter;
 //import org.apache.poi.xwpf.converter.pdf.PdfOptions;
@@ -58,9 +41,118 @@ public class Main
 	//static final String PATH_TO_SAVE_PDF = "C:\\Users\\Andrew Sidorchuk\\Desktop\\Worship Team\\Z Binder\\PDFs";
 	private static long totalLines;
 	private static int currentLine;
+	static Drive driveService;
+	static String query = "";
+	
+	static String [] tabs = {"", "\t", "\t\t", "\t\t\t", "\t\t\t\t"};
+	static int tabCount = 0;
+	
+	static List<GoogleFolderNode> driveFolderHierarchy;
 	
 	public static void main(String [] args)
 	{
+//		driveFolderHierarchy = new LinkedList<GoogleFolderNode>();
+//		
+//		try 
+//		{
+//			driveService = GoogleDriveUtil.getDriveService();
+//			getSubFolder(null, null);
+//			String pageToken = "";
+//			List<com.google.api.services.drive.model.File> list = new ArrayList<com.google.api.services.drive.model.File>();
+//
+//			String query = " mimeType = 'application/vnd.google-apps.folder' "
+//                    		+ " and 'root' in parents";
+//			
+//			while(pageToken != null)
+//			{
+//				 FileList result = driveService.files().list().setQ(query).setSpaces("drive") //
+//		                    // Fields will be assigned values: id, name, createdTime
+//		                    .setFields("nextPageToken, files(id, name, createdTime)")//
+//		                    .setPageToken(pageToken).execute();
+//		            
+//				 for (com.google.api.services.drive.model.File file : result.getFiles()) 
+//		                list.add(file);
+//		            
+//		            pageToken = result.getNextPageToken();
+//			}
+//			
+//			for (com.google.api.services.drive.model.File folder : list)
+//			{
+//	            System.out.println("Folder ID: " + folder.getId() + " --- \t\tName: " + folder.getName());
+//	            
+//	            query = " mimeType = 'application/vnd.google-apps.folder' " //
+//	                    + " and '" + folder.getId() + "' in parents";
+//	            
+//	            pageToken = "";
+//	            while(pageToken != null)
+//				{
+//					 FileList result = driveService.files().list().setQ(query).setSpaces("drive") //
+//			                    // Fields will be assigned values: id, name, createdTime
+//			                    .setFields("nextPageToken, files(id, name, createdTime)")//
+//			                    .setPageToken(pageToken).execute();
+//			            
+//					 for (com.google.api.services.drive.model.File file : result.getFiles()) 
+//			                list2.add(file);
+//			            
+//			            pageToken = result.getNextPageToken();
+//				}
+//	            
+//	            for(com.google.api.services.drive.model.File folder2 : list2)
+//	            	System.out.println("\t\tFolder ID: " + folder2.getId() + " --- \t\tName: " + folder2.getName());
+//	            
+//	            list2.clear();
+//			System.out.println();
+//		} 
+//		catch (IOException e)
+//		{
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+//	
+//	public static void getSubFolder(com.google.api.services.drive.model.File folder, String parentID) throws IOException
+//	{
+//		if(folder != null)
+//		{
+//			driveFolderHierarchy.add(new GoogleFolderNode(folder.getName(), folder.getId(), parentID));
+//			System.out.print(tabs[tabCount] + folder.getName() + " - ");
+//		}
+//
+//		String pageToken = "";
+//		List<com.google.api.services.drive.model.File> list = new ArrayList<com.google.api.services.drive.model.File>();
+//
+//		if(query.compareTo("") == 0 || folder == null)
+//			query = " mimeType = 'application/vnd.google-apps.folder' "
+//            		+ " and 'root' in parents";
+//		else
+//			query = " mimeType = 'application/vnd.google-apps.folder' " 
+//						+ " and '" + folder.getId() + "' in parents";
+//		
+//		while(pageToken != null)
+//		{
+//			 FileList result = driveService.files().list().setQ(query).setSpaces("drive") //
+//	                    // Fields will be assigned values: id, name, createdTime
+//	                    .setFields("nextPageToken, files(id, name, createdTime)")//
+//	                    .setPageToken(pageToken).execute();
+//	            
+//			 for (com.google.api.services.drive.model.File file : result.getFiles()) 
+//			 {
+//				 	tabCount++;
+//				 	if(tabCount == 1)
+//				 		getSubFolder(file, "root");
+//				 	else
+//				 		getSubFolder(file, )
+//				 	tabCount--;
+//			 }
+//	            
+//	            pageToken = result.getNextPageToken();
+//		}
+//		
+//		System.out.println();
+//		
+//		
+//	}
+	
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException e) {
@@ -76,7 +168,9 @@ public class Main
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		GUI window = new GUI();
+//		GUI window = new GUI();
+		Window window = new Window();
+	}
 		
 //	   
 //		Queue<Path> paths = new LinkedList<Path>();
@@ -108,9 +202,6 @@ public class Main
 //			} 	
 //		}
 		
-		
-		System.out.println("Done");
-	}
 	
 	public static void uploadToGoogle(String fullSongPath)
 	{
